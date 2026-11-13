@@ -1,0 +1,59 @@
+.venv/
+.pytest_cache/
+.vscode/
+**/test_output/**
+build.env
+runtime.build.env
+ddb.build.env
+.netrc
+netrc.secret
+__pycache__/
+.mypy_cache/
+.wizard*/
+
+# AI stuff
+.claude
+.agents/skills/iad-slurm
+.serena
+.zed
+.cursor/plans/archived/
+
+**/*.egg-info
+
+src/tools/run-on-slurm/runs
+src/tools/run-on-slurm/outputs
+data/drivers/*
+data/alpackages/*
+data/huggingface
+data/vavam-driver
+outputs/
+artifacts/
+asset_harvesting/
+
+# uv.lock is only used in local development. On the server, we use uv tool run,
+# which does not require uv.lock.
+.worktrees/
+
+# Rollout viewer scratch output
+/rollout_viewer_data/
+/*.log
+/plugins/internal/src/tools/rollout_viewer/rollout_viewer_data/
+/plugins/internal/src/tools/rollout_viewer/**/*.log
+
+# Large local data and run output (re-downloadable / regenerable)
+data/hf_cache/
+containers/
+benchmark/smoke_runs/
+benchmark/failed_runs/
+benchmark/logs/
+vavam_*.err
+vavam_*.log
+tutorial/
+tutorial_2/
+
+# Raw closed-loop output (GB per run); results and per-rollout metrics are tracked.
+benchmark/runs*/**/rollout.asl
+benchmark/runs*/**/*.mp4
+benchmark/runs*/**/service-logs/
+benchmark/runs*/**/txt-logs/
+benchmark/final/logs/

@@ -1,0 +1,165 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 NVIDIA Corporation
+
+"""Controller event for the split policy pipeline.
+
+Runs the controller and vehicle model, writing the unconstrained pose and
+estimated state to StepContext.
+"""
+
+from __future__ import annotations
+
+import numpy as np
+from alpasim_runtime.events.base import EventPriority, EventQueue, RecurringEvent
+from alpasim_runtime.events.force_gt_utils import controller_reference_trajectory
+from alpasim_runtime.events.state import RolloutState, ServiceBundle
+from alpasim_utils import geometry
+
+
+class ControllerEvent(RecurringEvent):
+    """Run controller + vehicle model, writing results to StepContext."""
+
+    priority: int = EventPriority.CONTROLLER
+
+    def __init__(
+        self,
+        timestamp_us: int,
+        control_timestep_us: int,
+        services: ServiceBundle,
+    ):
+        super().__init__(timestamp_us=timestamp_us)
+        self.interval_us = control_timestep_us
+        self.services = services
+
+    async def run(self, state: RolloutState, queue: EventQueue) -> None:
+        ctx = state.step_context
+
+        # --- Sanity checks ---
+        assert ctx is not None, "StepContext missing — PolicyEvent did not run"
+        assert (
+            ctx.step_start_us == self.timestamp_us
+        ), f"StepContext timestamp mismatch: {ctx.step_start_us} != {self.timestamp_us}"
+        assert (
+            ctx.driver_trajectory is not None
+        ), "driver_trajectory not set by PolicyEvent"
+
+        # --- Controller + vehicle model ---
+        ctx.ego_true, ctx.ego_estimated = await self._run_controller(state)
+
+    async def _run_controller(
+        self, state: RolloutState
+    ) -> tuple[geometry.DynamicTrajectory, geometry.DynamicTrajectory]:
+        """Run the controller and vehicle model.
+
+        Returns (ego_true, ego_estimated) as DynamicTrajectory pairs.
+        """
+        ctx = state.step_context
+        assert ctx is not None
+        planner_delay_buffer = self.services.planner_delay_buffer
+        controller = self.services.controller
+
+        step_start_us = ctx.step_start_us
+        target_time_us = ctx.target_time_us
+        force_gt = ctx.force_gt
+        handoff = (
+            not force_gt
+            and state.unbound.force_gt_duration_us > 0
+            and step_start_us == state.unbound.closed_loop_start_us
+        )
+        coerce_dynamic_state = force_gt or handoff
+        reference_trajectory_of_rig_in_local = ctx.driver_trajectory
+        assert reference_trajectory_of_rig_in_local is not None
+
+        pose_local_to_rig = state.ego_trajectory.last_pose
+
+        if force_gt:
+            fallback_trajectory_local_to_rig = state.force_gt_trajectory
+            fallback_range_us = state.force_gt_trajectory.time_range_us
+            if step_start_us not in fallback_range_us:
+                raise ValueError(
+                    "force-GT trajectory does not cover controller step start: "
+                    f"step_start_us={step_start_us}, "
+                    f"trajectory_range={fallback_range_us}"
+                )
+            if target_time_us not in fallback_range_us:
+                raise ValueError(
+                    "force-GT trajectory does not cover controller target: "
+                    f"target_time_us={target_time_us}, "
+                    f"trajectory_range={fallback_range_us}"
+                )
+
+            reference_trajectory_of_rig_in_local = controller_reference_trajectory(
+                state.force_gt_trajectory, step_start_us
+            )
+        else:
+            fallback_trajectory_local_to_rig = reference_trajectory_of_rig_in_local
+
+        if coerce_dynamic_state:
+            if state.force_gt_dynamics is None:
+                raise RuntimeError("force-GT dynamics were not initialized")
+            gt_dynamics = state.force_gt_dynamics.interpolate_dynamics(
+                np.array([step_start_us], dtype=np.uint64)
+            )[0]
+            rig_linear_velocity_in_rig = gt_dynamics[0:3]
+            rig_angular_velocity_in_rig = gt_dynamics[3:6]
+            rig_linear_acceleration_in_rig = gt_dynamics[6:9]
+        else:
+            assert len(state.ego_trajectory.timestamps_us) >= 2, (
+                "ego_trajectory must have at least 2 entries by the time the "
+                "controller runs (seeded with [t0, t1] during initialization)"
+            )
+            dt = (
+                state.ego_trajectory.timestamps_us[-1]
+                - state.ego_trajectory.timestamps_us[-2]
+            ) / 1e6
+            pose_local_to_rig_t0 = state.ego_trajectory.get_pose(-2)
+            pose_local_to_rig_t1 = state.ego_trajectory.last_pose
+
+            pose_rig0_to_rig1 = pose_local_to_rig_t0.inverse() @ pose_local_to_rig_t1
+            rig_linear_velocity_in_rig = pose_rig0_to_rig1.vec3 / dt
+            rig_angular_velocity_in_rig = 2.0 * pose_rig0_to_rig1.quat[0:3] / dt
+            rig_linear_acceleration_in_rig = np.zeros(3, dtype=np.float64)
+
+        planner_delay_buffer.add(
+            reference_trajectory_of_rig_in_local.transform(pose_local_to_rig.inverse()),
+            step_start_us,
+        )
+        rig_reference_trajectory = planner_delay_buffer.at(step_start_us)
+
+        propagated_states = await controller.run_controller_and_vehicle(
+            now_us=step_start_us,
+            pose_local_to_rig=pose_local_to_rig,
+            rig_linear_velocity_in_rig=rig_linear_velocity_in_rig,
+            rig_angular_velocity_in_rig=rig_angular_velocity_in_rig,
+            rig_linear_acceleration_in_rig=rig_linear_acceleration_in_rig,
+            rig_reference_trajectory_in_rig=rig_reference_trajectory,
+            future_us=target_time_us,
+            force_gt=force_gt,
+            coerce_dynamic_state=coerce_dynamic_state,
+            fallback_trajectory_local_to_rig=fallback_trajectory_local_to_rig,
+            pose_reporting_interval_us=state.unbound.pose_reporting_interval_us
+            or state.unbound.control_timestep_us,
+        )
+
+        # Convert list[PropagatedPosesAtTime] → two DynamicTrajectory instances.
+        timestamps = np.array(
+            [s.timestamp_us for s in propagated_states], dtype=np.uint64
+        )
+        true_poses = [s.pose_local_to_rig for s in propagated_states]
+        est_poses = [s.pose_local_to_rig_estimate for s in propagated_states]
+        true_dynamics = geometry.dynamic_states_to_array(
+            [s.dynamic_state for s in propagated_states]
+        )
+        est_dynamics = geometry.dynamic_states_to_array(
+            [s.dynamic_state_estimated for s in propagated_states]
+        )
+
+        ego_true = geometry.DynamicTrajectory.from_trajectory_and_dynamics(
+            geometry.Trajectory.from_poses(timestamps, true_poses),
+            true_dynamics,
+        )
+        ego_estimated = geometry.DynamicTrajectory.from_trajectory_and_dynamics(
+            geometry.Trajectory.from_poses(timestamps, est_poses),
+            est_dynamics,
+        )
+        return ego_true, ego_estimated

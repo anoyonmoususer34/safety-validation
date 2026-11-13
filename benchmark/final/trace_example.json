@@ -1,0 +1,32 @@
+{
+ "sensor_mode": "fused",
+ "speed_mps": {
+  "model": 10.45,
+  "validated": 10.06,
+  "current": 10.12
+ },
+ "candidates": {
+  "model": 4,
+  "selected": 4
+ },
+ "tier": 3,
+ "violations": [
+  "STOPPING_DISTANCE_VIOLATION"
+ ],
+ "obstacles": [
+  {
+   "id": "21",
+   "source": "lidar+radar",
+   "confidence": 0.69,
+   "gap_m": 15.47,
+   "ttc_s": 1.47,
+   "adj_ttc_s": 3.05,
+   "relevant": true,
+   "flags": [
+    "STOPPING_DISTANCE_VIOLATION"
+   ]
+  }
+ ],
+ "time_s_after_onset": 2.6,
+ "reasoning": "Keep distance to the lead vehicle since it is moving slowly ahead"
+}

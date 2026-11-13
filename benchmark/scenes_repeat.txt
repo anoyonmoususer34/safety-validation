@@ -1,0 +1,2 @@
+# The baseline core run's at-fault collision scene
+clipgt-76c2bb81-6435-44e9-859a-2033ca05173b

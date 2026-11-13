@@ -1,0 +1,4 @@
+arm: alpamayo1_5_vcache_exact
+gpu: NVIDIA L40S, 610.57.04, 46068 MiB
+torch: 2.8.0+cu128 12.8
+started: 2026-10-29T18:54:54-04:00

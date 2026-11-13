@@ -1,0 +1,17 @@
+# @package _global_
+# Experiment config overrides to run vavam at 4Hz (double the default 2Hz frequency)
+
+runtime:
+  simulation_config:
+    control_timestep_us: 250_000        # 4Hz (halved from 500_000)
+
+    cameras:
+      - height: 1080
+        width: 1920
+        logical_id: camera_front_wide_120fov
+        frame_interval_us: 250_000      # 4Hz (halved from 500_000)
+        shutter_duration_us: 30_000
+
+driver:
+  inference:
+    subsample_factor: 2                 # Subsample every 2nd frame

@@ -1,0 +1,12 @@
+# part 1 of 4 of benchmark/scenes_core.txt
+clipgt-05e74bef-0afa-468e-b679-b7f14079be30
+clipgt-05f35348-9de0-4f68-ac65-f31316dbb59e
+clipgt-096988dd-9367-4fdf-84f9-5a73c5061c6e
+clipgt-0d1fcd2c-ed47-4c72-b756-8e24bce0b9f4
+clipgt-0dbb91dd-8db1-4e10-b155-14fdf46218bc
+clipgt-127c4f85-a5db-4920-9813-7970dcd6ebdb
+clipgt-1a7b81b8-9bca-4385-a591-64f74eb59db2
+clipgt-1d0d601f-bba0-423a-8f3f-8942bb529fd7
+clipgt-20a057e5-c79e-4e78-934e-754a8de365b2
+clipgt-22f1e835-c0b2-468f-9385-e893f22d1e6c
+clipgt-307a1b77-7fce-4427-8175-4ac14d0147d2

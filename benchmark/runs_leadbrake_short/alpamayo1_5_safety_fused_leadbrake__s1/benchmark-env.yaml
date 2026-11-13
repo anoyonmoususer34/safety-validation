@@ -1,0 +1,4 @@
+arm: alpamayo1_5_safety_fused_leadbrake__s1
+gpu: NVIDIA A40, 595.71.05, 46068 MiB
+torch: 2.8.0+cu128 12.8
+started: 2026-11-10T12:45:10-06:00

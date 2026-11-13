@@ -1,0 +1,21 @@
+# 20 downloaded scenes with a lead vehicle for exp/scenario=lead_brake, fastest recorded ego first (benchmark/select_lead_brake.py)
+clipgt-05e74bef-0afa-468e-b679-b7f14079be30
+clipgt-05f35348-9de0-4f68-ac65-f31316dbb59e
+clipgt-0dbb91dd-8db1-4e10-b155-14fdf46218bc
+clipgt-127c4f85-a5db-4920-9813-7970dcd6ebdb
+clipgt-1bc5e591-0f30-4d73-a7e9-fa04fa160530
+clipgt-23b03b84-fb88-445a-9a85-e19bad0a4986
+clipgt-348210ac-6ad8-425c-8797-f2babe6c8850
+clipgt-4ecc114d-4c76-49bb-874c-601561d738bb
+clipgt-616e5804-5b6f-4bc3-8a0f-c1fa0d37423d
+clipgt-6250146a-7f9f-4508-851e-e25b7d9dc36a
+clipgt-772b0438-a9cb-4601-977c-334166d442fd
+clipgt-96afa4f7-099a-4b05-8763-0bf6b4e1c1b3
+clipgt-ad69dd31-6d89-4869-90a9-3a4da4b35843
+clipgt-c438a779-964c-4bb7-bfde-61d9abe5b39d
+clipgt-d55c0611-363e-4317-8978-cfacddbbe797
+clipgt-d68c7161-bef6-4342-800f-607127417825
+clipgt-e7ddb7f0-1f6f-4076-9e02-7765abda065a
+clipgt-faa097ac-631a-43ef-935a-4fc8e21cdeb6
+clipgt-fea4c0bf-4020-415e-ab89-6b0b24f9add9
+clipgt-fece9f19-fd68-41f6-b406-edd22d4aa15c

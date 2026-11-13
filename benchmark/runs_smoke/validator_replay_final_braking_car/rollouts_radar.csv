@@ -1,0 +1,2 @@
+scene,rollout,run,steps,at_fault,collision,plan_flagged_pct,switched_pct,speed_override_pct,braking_override_pct,lead_time_s,last_speed_mps,last_closest_gap_m,emergency_ttc_pct,stopping_distance_pct,low_ttc_pct,rear_collision_pct
+clipgt-348210ac-6ad8-425c-8797-f2babe6c8850,c6e2a502-db2b-11f1-b2a7-9b4c3543f6fd,alpamayo1_5_leadbrake,83,true,front,27.710843373493976,0.0,25.301204819277107,25.301204819277107,0.0,15.624163848107166,30.45113604736328,3.614457831325301,24.096385542168676,2.4096385542168677,0.0

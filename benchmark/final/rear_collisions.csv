@@ -1,0 +1,14 @@
+set,scene,collision_s,actor,2s_before,ego_mps_2s,1s_before,ego_mps_1s,checks fired in 3 s before (model plan)
+alpamayo1_5,127c4f85,18.5,automobile,"x=-13.0 y=-0.2 gap=9.2 m, closing 5.1 m/s, in rear corridor",0.1,"x=-8.5 y=-0.2 gap=4.7 m, closing 4.0 m/s, in rear corridor",0.1,REAR_COLLISION_RISK
+alpamayo1_5,4ebbe43e,10.1,automobile,"x=-7.4 y=-2.8 gap=3.8 m, closing 1.8 m/s, OUT of rear corridor",6.5,"x=-5.8 y=-2.5 gap=2.3 m, closing 1.1 m/s, in rear corridor",6.8,"EMERGENCY_TTC_VIOLATION, LOW_TTC_VIOLATION, REAR_COLLISION_RISK, STOPPING_DISTANCE_VIOLATION"
+alpamayo1_5,6ea7f154,14.6,automobile,"x=-13.7 y=+2.1 gap=10.3 m, closing 5.3 m/s, in rear corridor",6.0,"x=-8.7 y=+1.4 gap=5.3 m, closing 4.8 m/s, in rear corridor",5.1,"REAR_COLLISION_RISK, STOPPING_DISTANCE_VIOLATION"
+alpamayo1_5,702366ca,15.2,automobile,"x=-19.2 y=-0.2 gap=15.6 m, closing 5.5 m/s, in rear corridor",5.5,"x=-12.7 y=-0.2 gap=9.1 m, closing 7.3 m/s, in rear corridor",4.4,none
+alpamayo1_5,76c2bb81,17.8,automobile,"x=-2.3 y=+2.8 gap=-1.5 m, closing 1.6 m/s, OUT of rear corridor",7.3,"x=-0.5 y=+2.5 gap=-3.3 m, closing 2.0 m/s, in rear corridor",8.4,"LOW_TTC_VIOLATION, STOPPING_DISTANCE_VIOLATION"
+alpamayo1_5,7ae6bec8,8.5,rider,"x=-2.3 y=+1.4 gap=-0.0 m, closing 2.1 m/s, in rear corridor",5.5,"x=-5.9 y=+1.4 gap=3.5 m, closing 1.6 m/s, in rear corridor",6.1,"LOW_TTC_VIOLATION, REAR_COLLISION_RISK, STOPPING_DISTANCE_VIOLATION"
+alpamayo1_5,ad69dd31,13.7,automobile,"x=-13.0 y=-0.1 gap=9.8 m, closing 4.3 m/s, in rear corridor",5.1,"x=-8.4 y=+0.0 gap=5.1 m, closing 4.7 m/s, in rear corridor",3.4,REAR_COLLISION_RISK
+alpamayo1_5,c438a779,18.7,automobile,"x=-14.8 y=-0.1 gap=11.3 m, closing 5.7 m/s, in rear corridor",4.0,"x=-9.2 y=-0.2 gap=5.6 m, closing 5.1 m/s, in rear corridor",3.2,REAR_COLLISION_RISK
+alpamayo1_5,d9c2a88b,10.2,automobile,"x=-10.5 y=+0.0 gap=7.0 m, closing 3.1 m/s, in rear corridor",9.6,"x=-7.4 y=-0.7 gap=4.0 m, closing 2.9 m/s, in rear corridor",8.8,"LOW_TTC_VIOLATION, REAR_COLLISION_RISK, STOPPING_DISTANCE_VIOLATION"
+alpamayo1_5,df113232,8.0,automobile,"x=-15.4 y=+0.1 gap=11.8 m, closing 3.9 m/s, in rear corridor",9.6,"x=-10.6 y=+0.0 gap=7.0 m, closing 5.6 m/s, in rear corridor",8.3,"LOW_TTC_VIOLATION, REAR_COLLISION_RISK, STOPPING_DISTANCE_VIOLATION"
+alpamayo1_5,fece9f19,18.3,automobile,"x=-10.9 y=-0.1 gap=7.7 m, closing 4.5 m/s, in rear corridor",0.8,"x=-6.9 y=-0.2 gap=3.6 m, closing 3.6 m/s, in rear corridor",0.1,REAR_COLLISION_RISK
+alpamayo1_5_vcache_exact,d9c2a88b,10.0,automobile,"x=-10.7 y=+0.0 gap=7.2 m, closing 3.2 m/s, in rear corridor",9.7,"x=-7.5 y=-0.7 gap=4.0 m, closing 3.0 m/s, in rear corridor",8.9,"LOW_TTC_VIOLATION, REAR_COLLISION_RISK, STOPPING_DISTANCE_VIOLATION"
+alpamayo1_5_vcache_exact,d9c2a88b,10.4,automobile,"x=-10.4 y=-0.1 gap=6.9 m, closing 3.3 m/s, in rear corridor",9.3,"x=-7.3 y=-0.9 gap=3.8 m, closing 2.9 m/s, in rear corridor",8.6,"LOW_TTC_VIOLATION, REAR_COLLISION_RISK, STOPPING_DISTANCE_VIOLATION"

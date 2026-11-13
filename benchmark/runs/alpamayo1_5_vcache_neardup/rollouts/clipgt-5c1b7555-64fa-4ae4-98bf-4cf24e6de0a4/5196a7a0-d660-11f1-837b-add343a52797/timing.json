@@ -1,0 +1,8 @@
+{
+  "n_sim_steps": 198,
+  "simulated_duration_s": 19.951316,
+  "loop_duration_s": 4268.7359482389875,
+  "rollout_duration_s": 4269.14804218302,
+  "sim_steps_per_s": 0.04638375444179966,
+  "realtime_ratio": 0.004673822940074487
+}

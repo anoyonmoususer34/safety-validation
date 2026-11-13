@@ -1,0 +1,16 @@
+# @package _global_
+# The vehicle ahead of the ego brakes hard to a stop (alpasim_runtime.lead_brake),
+# after the car-to-car braking tests of emergency-braking ratings: 2 s into the
+# closed loop or later, the nearest vehicle ahead in the ego's lane brakes at
+# 6 m/s^2 and stays stopped.  Scenes without one run unchanged.
+#
+# Usage: uv run alpasim_wizard ... +exp/scenario=lead_brake
+
+runtime:
+  simulation_config:
+    lead_brake:
+      after_closed_loop_s: 2.0
+      decel_mps2: 6.0
+      max_distance_m: 40.0
+      lane_half_width_m: 1.8
+      min_ego_speed_mps: 5.0

@@ -1,0 +1,46 @@
+# Should be used in defaults list, e.g.
+# - /driver: vavam
+# Type validation happens at driver runtime via OmegaConf.structured merge
+
+defaults:
+  - vavam_configs       # Camera and simulation configs for 1-cam 2Hz
+  - _self_                      # YAML values override schema defaults
+
+# VAM Driver Configuration for Alpasim
+
+# Logging level (uses wizard's global setting)
+log_level: ${wizard.log_level}
+
+# Model configuration
+model:
+  model_type: vam  # Entry-point name in alpasim.models registry
+  checkpoint_path: "/mnt/drivers/vavam/VAM_width_1024_pretrained_139k.pt"
+  device: "cuda"
+  tokenizer_path: "/mnt/drivers/vavam/VQ_ds16_16384_llamagen_encoder.jit"
+
+# Server configuration
+host: "0.0.0.0"
+port: ???
+
+# Inference configuration
+inference:
+  use_cameras: ["camera_front_wide_120fov"]  # VAM requires exactly one camera
+  max_batch_size: 32
+  subsample_factor: 1
+  context_length: 1
+
+# Route configuration
+route:
+  default_command: 2  # Default command: 0=right, 1=left, 2=straight
+  use_waypoint_commands: true
+  command_distance_threshold: 3.0  # Lateral displacement threshold in meters
+  min_lookahead_distance: 20.0  # Minimum distance to look ahead for waypoints in meters
+
+# Output configuration
+output_dir: "/mnt/output/driver"
+
+# Trajectory optimization (VaVam-Eco, disabled by default)
+trajectory_optimizer:
+  enabled: false
+
+plot_debug_images: false

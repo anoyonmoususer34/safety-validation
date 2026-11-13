@@ -1,0 +1,436 @@
+defines:
+  filesystem: <repo>/data
+  driver_model: ???
+  image_registry: ''
+  base_image: alpasim-base:0.134.0
+  hf_cache: <repo>/data/hf_cache
+  drivers: <repo>/data/drivers
+  sensordata: <repo>/data/nre-artifacts
+  trafficsim_models: <repo>/data/trafficsim-models
+  renderer_entrypoint: /app/internal/scripts/pycena/runtime/pycena_nrm_full
+  nre_max_workers: '4'
+  nre_max_backends_per_scene: '1'
+  helper: scripts
+  vscode: sources/remote-vscode-server
+  physics_cache_size: '16'
+  nre_cache_size: '5'
+wizard:
+  run_name: null
+  run_method: DOCKER_COMPOSE
+  run_mode: ONESHOT
+  log_level: INFO
+  prometheus:
+    scrape_interval: 5s
+    file_sd_dir: <repo>/data/prometheus/file-sd
+    start_prometheus: true
+    run_uuid: null
+  description: unspecified
+  submitter: unspecified
+  latest_symlink: false
+  log_dir: <repo>/benchmark/runs_smoke/alpamayo1_5_leadbrake
+  array_job_dir: null
+  dry_run: true
+  baseport: 6000
+  runtime_server_port: null
+  validate_mount_points: true
+  driver_code_hash: null
+  driver_code_repo: null
+  helper: ???
+  vscode: ???
+  sqshcaches:
+  - <repo>/data/sqsh
+  - <repo>/data/sqsh/dev
+  slurm_job_id: 0
+  timeout: 2400
+  nr_retries: 2
+  run_sim_services:
+  - driver
+  - renderer
+  - physics
+  - trafficsim
+  - controller
+  - runtime
+  debug_flags:
+    use_localhost: false
+  slurm_cpu_bind_none: true
+  fuse_dir: null
+  node_local_sqsh_cache_dir: null
+  node_local_sqsh_cache_max_gib: 500
+  enable_mps: false
+  external_services: null
+scenes:
+  scene_ids:
+  - clipgt-348210ac-6ad8-425c-8797-f2babe6c8850
+  test_suite_id: null
+  limit_to_first_n: 0
+  scene_cache: <repo>/data/nre-artifacts
+  scenes_csv:
+  - <repo>/data/scenes/sim_scenes.csv
+  suites_csv:
+  - <repo>/data/scenes/sim_suites.csv
+  sceneset_path: scenesets/8c6b44e8625c45480b05b2df77ec3143
+  local_usdz_dir: null
+  nre_version_string: null
+services:
+  driver:
+    volumes:
+    - <repo>/data/drivers:/mnt/drivers
+    - <repo>/benchmark/runs_smoke/alpamayo1_5_leadbrake:/mnt/output
+    - <repo>/src:/repo/src
+    - <repo>/plugins:/repo/plugins
+    - <repo>/data/hf_cache:/root/.cache/huggingface
+    image: alpasim-base:0.134.0
+    external_image: false
+    pull_policy: missing
+    environments: []
+    workdir: null
+    remap_root: false
+    command:
+    - uv run -m alpasim_driver.main
+    - --config-path=/mnt/output
+    - --config-name=driver-config.yaml
+    - host=0.0.0.0
+    - port={port}
+    replicas_per_container: 1
+    gpus:
+    - 0
+  renderer:
+    volumes:
+    - <repo>/data/nre-artifacts:/mnt/nre-data
+    - <repo>/data/nre-artifacts/ego-hoods:/mnt/ego-hoods
+    image: nvcr.io/nvidia/nre/nre-ga:26.04
+    external_image: true
+    pull_policy: missing
+    environments:
+    - HOME=/tmp
+    - XDG_CACHE_HOME=/tmp/.cache
+    - OMP_NUM_THREADS=1
+    workdir: null
+    remap_root: false
+    command:
+    - /app/internal/scripts/pycena/runtime/pycena_nrm_full
+    - serve-grpc
+    - --port={port}
+    - --host=0.0.0.0
+    - --artifact-glob=/mnt/nre-data/{sceneset}/**/*.usdz
+    - --egocar-hood-dir=/mnt/ego-hoods
+    - --no-enable-nrend
+    - --download-cache-dir /tmp/nre-cache-dir
+    - --cache-size=5
+    - --max-workers=4
+    - --enable-editing-actors
+    replicas_per_container: 1
+    gpus:
+    - 0
+  physics:
+    volumes:
+    - <repo>/data/nre-artifacts:/mnt/nre-data
+    - <repo>/src:/repo/src
+    - <repo>/plugins:/repo/plugins
+    image: alpasim-base:0.134.0
+    external_image: false
+    pull_policy: missing
+    environments:
+    - WARP_CACHE_PATH='/mnt/warp'
+    workdir: null
+    remap_root: false
+    command:
+    - uv run physics_server
+    - --host=0.0.0.0
+    - --port={port}
+    - --artifact-glob=/mnt/nre-data/{sceneset}/**/*.usdz
+    - --use-ground-mesh=true
+    - --cache-size=16
+    - --log-level=INFO
+    replicas_per_container: 1
+    gpus:
+    - 0
+  trafficsim:
+    volumes: []
+    image: alpasim-base:0.134.0
+    external_image: false
+    pull_policy: missing
+    environments: []
+    workdir: null
+    remap_root: false
+    command:
+    - echo 'no traffic simulation configured'
+    replicas_per_container: 1
+    gpus:
+    - 0
+  controller:
+    volumes:
+    - <repo>/benchmark/runs_smoke/alpamayo1_5_leadbrake/controller:/mnt/output
+    - <repo>/benchmark/runs_smoke/alpamayo1_5_leadbrake:/mnt/config
+    - <repo>/src:/repo/src
+    - <repo>/plugins:/repo/plugins
+    image: alpasim-base:0.134.0
+    external_image: false
+    pull_policy: missing
+    environments: []
+    workdir: null
+    remap_root: false
+    command:
+    - uv run python -m alpasim_controller.server
+    - --port={port}
+    - --log_dir=/mnt/output
+    - --log-level=INFO
+    - --config=/mnt/config/controller-config.yaml
+    replicas_per_container: 1
+    gpus: null
+  runtime:
+    volumes:
+    - <repo>/data/nre-artifacts:/mnt/nre-data
+    - <repo>/benchmark/runs_smoke/alpamayo1_5_leadbrake:/mnt/log_dir
+    - <repo>/benchmark/runs_smoke/alpamayo1_5_leadbrake:/mnt/array_job_dir
+    - <repo>/src:/repo/src
+    - <repo>/plugins:/repo/plugins
+    image: alpasim-base:0.134.0
+    external_image: false
+    pull_policy: missing
+    environments: []
+    workdir: null
+    remap_root: false
+    command:
+    - uv run python -m alpasim_runtime.simulate
+    - --user-config=/mnt/log_dir/{runtime_config_name}
+    - --network-config=/mnt/log_dir/generated-network-config.yaml
+    - --log-dir=/mnt/log_dir
+    - --log-level=INFO
+    - --array-job-dir=/mnt/array_job_dir
+    - --eval-config=/mnt/log_dir/eval-config.yaml
+    replicas_per_container: 1
+    gpus: null
+    depends_on:
+    - driver
+    - renderer
+    - physics
+    - trafficsim
+    - controller
+  prometheus:
+    volumes:
+    - <repo>/benchmark/runs_smoke/alpamayo1_5_leadbrake:/mnt/log_dir
+    - <repo>/src:/repo/src
+    - <repo>/plugins:/repo/plugins
+    - /proc:/host/proc:ro
+    - /sys:/host/sys:ro
+    image: alpasim-base:0.134.0
+    external_image: false
+    pull_policy: missing
+    environments: []
+    workdir: null
+    remap_root: false
+runtime:
+  max_rollout_retries: 2
+  scene_provider:
+    kind: usdz
+    usdz:
+      data_dir: null
+      artifact_cache_size: 10
+    trajdata:
+      cache_location: trajdata_cache
+      desired_dt: 0.1
+      load_vector_map: true
+      rebuild_cache: false
+      rebuild_maps: false
+      num_workers: 4
+      dataset:
+        name: null
+        data_dir: null
+        extra_params:
+          config_dir: null
+          num_timesteps_before: 30
+          num_timesteps_after: 80
+  smooth_trajectories: true
+  endpoints:
+    sensorsim_cache_size: '5'
+    renderer:
+      n_concurrent_rollouts: 4
+      skip: false
+    controller:
+      skip: false
+      n_concurrent_rollouts: 4
+    driver:
+      n_concurrent_rollouts: 4
+    physics:
+      n_concurrent_rollouts: 4
+      skip: false
+    trafficsim:
+      n_concurrent_rollouts: 4
+      skip: true
+  renderer:
+    kind: sensorsim
+    video_model_config: null
+  enable_autoresume: false
+  simulation_config:
+    n_sim_steps: 100
+    n_rollouts: 1
+    force_gt_duration_us: 1700000
+    skip_driver_during_force_gt: true
+    force_gt_frame_cache:
+      enabled: false
+      cache_dir: /mnt/nre-data/force_gt_frame_cache
+      extra_key: null
+    send_recording_ground_truth: false
+    render_bundling: BATCH_RENDER_RGB
+    control_timestep_us: 100000
+    pose_reporting_interval_us: 0
+    ego_mask_rig_config_id: hyperion_8_1
+    planner_delay_us: 0
+    min_traffic_duration_us: 3000000
+    assert_zero_decision_delay: true
+    physics_update_mode: EGO_ONLY
+    route_generator_type: NONE
+    route_start_offset_m: 0.0
+    vehicle: null
+    cameras:
+    - logical_id: camera_cross_left_120fov
+      height: 1080
+      width: 1900
+      frame_interval_us: 100000
+      shutter_duration_us: 30000
+    - logical_id: camera_front_wide_120fov
+      height: 1080
+      width: 1900
+      frame_interval_us: 100000
+      shutter_duration_us: 30000
+    - logical_id: camera_cross_right_120fov
+      height: 1080
+      width: 1900
+      frame_interval_us: 100000
+      shutter_duration_us: 30000
+    - logical_id: camera_front_tele_30fov
+      height: 1080
+      width: 1900
+      frame_interval_us: 100000
+      shutter_duration_us: 30000
+    lead_brake:
+      after_closed_loop_s: 2.0
+      decel_mps2: 6.0
+      max_distance_m: 40.0
+      lane_half_width_m: 1.8
+      min_ego_speed_mps: 5.0
+  nr_workers: 1
+trafficsim:
+  server:
+    max_workers: 4
+eval:
+  enabled: true
+  allow_aggregation_with_failed_rollouts: false
+  parse_unstructured_debug_info: true
+  vec_map:
+    incl_road_edges: true
+    incl_traffic_signs: true
+    incl_wait_lines: true
+    max_num_lanes: 20
+    num_pts_per_lane: 20
+  num_processes: 16
+  vehicle:
+    vehicle_corner_roundness: 0.5
+    vehicle_shrink_factor: 0.02
+  scorers:
+    min_ade:
+      time_deltas:
+      - 0.5
+      - 1.0
+      - 2.5
+      - 5.0
+      incl_z: false
+      target: GT
+    plan_deviation:
+      incl_z: false
+      avg_decay_rate: 0.1
+      min_timesteps: 5
+    image:
+      camera_logical_id: camera_front_wide_120fov
+    open_loop_collision:
+      horizon_s: 3.0
+  aggregation_modifiers:
+    max_dist_to_gt_trajectory: 4.0
+  scene_score:
+    enabled: true
+    progress_saturation_threshold: 0.8
+    min_gt_distance_for_full_score_m: 5.0
+  video:
+    render_video: true
+    video_layouts:
+    - DEFAULT
+    camera_id_to_render: camera_front_wide_120fov
+    reasoning_text_refresh_interval_s: 1.0
+    overlay_plans_on_camera: true
+    render_every_nth_frame: 1
+    generate_combined_video: false
+    combined_video_speed_factor: 0.33
+    metrics_table_entries:
+    - offroad_or_collision_at_fault
+    - collision_any
+    - collision_at_fault
+    - collision_front
+    - collision_lateral
+    - collision_rear
+    - offroad
+    - dist_to_gt_trajectory
+    - dist_to_gt_location
+    - progress
+    - progress_rel_to_total
+    - progress_rel
+    - safety_monitor_triggered
+    map_video:
+      map_radius_m: 20
+      ego_loc: BOTTOM_CENTER
+      rotate_map_to_ego: true
+      map_elements_to_plot:
+      - ROAD_LANE_CENTER
+      - ROAD_LANE_LEFT_EDGE
+      - ROAD_LANE_RIGHT_EDGE
+      - ROAD_EDGE
+      - STOP_LINE
+      - GT_LINESTRING
+      - EGO_GT_GHOST_POLYGON
+      - DRIVER_RESPONSES
+      - ROUTE
+      - AGENTS
+      - AGENT_IDS
+      - TRAFFIC_PREDICTIONS
+driver:
+  log_level: INFO
+  model:
+    model_type: alpamayo1_5
+    checkpoint_path: nvidia/Alpamayo-1.5-10B
+    device: cuda
+    force_determinism: false
+    image_decode_device: cuda
+    num_trajectory_samples: 6
+    trajectory_selection:
+      strategy: CLOSEST_LATERAL
+      max_num_distance_points: 64
+      skip_first_n_distance_points: 0
+  host: 0.0.0.0
+  port: ???
+  inference:
+    use_cameras:
+    - camera_cross_left_120fov
+    - camera_front_wide_120fov
+    - camera_cross_right_120fov
+    - camera_front_tele_30fov
+    max_batch_size: 1
+    subsample_factor: 1
+    context_length: 4
+  route:
+    use_waypoint_commands: false
+  output_dir: /mnt/output/driver
+  trajectory_optimizer:
+    enabled: false
+  plot_debug_images: false
+controller:
+  mpc_implementation: nonlinear
+  n_horizon: 20
+  dt_mpc: 0.1
+  gains:
+    long_position_weight: 2.0
+    lat_position_weight: 1.0
+    heading_weight: 1.0
+    acceleration_weight: 0.1
+    rel_front_steering_angle_weight: 5.0
+    rel_acceleration_weight: 1.0
+    idx_start_penalty: 10

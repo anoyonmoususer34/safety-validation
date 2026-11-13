@@ -1,0 +1,10 @@
+controller:
+  endpoints: []
+driver:
+  endpoints: []
+physics:
+  endpoints: []
+renderer:
+  endpoints: []
+trafficsim:
+  endpoints: []

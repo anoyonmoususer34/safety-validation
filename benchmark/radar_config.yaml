@@ -1,0 +1,36 @@
+# Radar models of the closed-loop runs (runtime.simulation_config.radars);
+# read by benchmark/replay_validator.py and benchmark/hazard_stress.py.
+simulation_config:
+  radars:
+  - name: front_long_range
+    rig_to_radar:
+      translation_m:
+      - 4.0
+      - 0.0
+      - 0.5
+      rotation_xyzw:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+    max_range_m: 200.0
+    half_fov_deg: 9.0
+    azimuth_noise_deg: 0.1
+    detection_probability: 0.9
+    false_alarms_per_scan: 1.5
+  - name: front_mid_range
+    rig_to_radar:
+      translation_m:
+      - 4.0
+      - 0.0
+      - 0.5
+      rotation_xyzw:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+    max_range_m: 70.0
+    half_fov_deg: 45.0
+    azimuth_noise_deg: 0.5
+    detection_probability: 0.9
+    false_alarms_per_scan: 1.5

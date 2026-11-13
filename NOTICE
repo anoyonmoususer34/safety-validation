@@ -1,0 +1,13 @@
+This repository is a modified version of AlpaSim (https://github.com/NVlabs/alpasim),
+licensed under the Apache License, Version 2.0 (see LICENSE).  The original
+AlpaSim README is kept in docs/ALPASIM_README.md.
+
+Modifications (see README.md, "What this repository adds"):
+  - a runtime safety validator for end-to-end driving policies, with LiDAR and
+    radar obstacle sensing and fusion (src/driver/src/alpasim_driver/);
+  - simulated radar, rendered LiDAR forwarding, lead-vehicle braking and sensor
+    weather effects in the runtime (src/runtime/alpasim_runtime/);
+  - sensor payload formats (src/utils/alpasim_utils/);
+  - a LiDAR perception package (src/lidar_perception/);
+  - wizard configurations for the validator and scenarios (src/wizard/configs/exp/);
+  - the experiment scripts and results of the accompanying paper (benchmark/).
