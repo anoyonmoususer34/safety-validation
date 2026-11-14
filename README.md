@@ -163,24 +163,15 @@ for arm in alpamayo1_5 alpamayo1_5_vcache_exact alpamayo1_5_vcache_neardup simfo
 done
 ```
 
-The arms (Hydra overrides per configuration) are defined in `benchmark/env.sh`; the
-validator arms add `+exp/sim=safety_validator` (LiDAR) or
-`+exp/sim=safety_validator_radar` (LiDAR + radar). The hazard test and replays use
-only the baseline runs, without the validator (`alpamayo1_5`, `simforge_d1_5`,
-`vavam` and the two `alpamayo1_5_vcache_*` arms, which run Alpamayo 1.5 with a
-visual-feature cache).
 
-### 2. Hazard test, replays and analyses (CPU)
+### 2. Hazard test, replays and analyses
 
 ```bash
 bash benchmark/reproduce_cpu.sh     # WORKERS=8 by default
 ```
 
 This reruns every hazard-test configuration, replay and analysis, and then the
-tables. It reads only the logged rollouts (`rollout.asl`), so it needs no GPU. The
-hazard test is deterministic: running the same configuration twice gives identical
-CSVs. With 8 workers each hazard-test configuration takes several hours; the whole
-script takes several days.
+tables.
 
 ## Not included
 
