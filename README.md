@@ -3,6 +3,12 @@
 Code, configurations and results for the paper *Safety Validation for End-to-End
 Autonomous Driving* (anonymous submission, CVPR 2027) and its supplementary material.
 
+![The same closed-loop scenario with and without the validator: Alpamayo 1.5 alone (left) and with the LiDAR + radar validator (right)](docs/media/braking_car.gif)
+
+*The lead car brakes hard in the same closed-loop AlpaSim scenario. Left: Alpamayo 1.5
+alone. Right: with the LiDAR + radar safety validator; the status line shows what the
+validator does at each step.*
+
 The paper adds a runtime safety validator to end-to-end driving policies. The
 validator checks each trajectory the policy proposes against obstacles sensed by
 LiDAR and radar, drives a safe candidate when there is one, and otherwise slows
