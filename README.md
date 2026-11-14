@@ -192,3 +192,7 @@ script takes several days.
 ## License
 
 Apache License 2.0 (see `LICENSE`). This repository modifies AlpaSim; see `NOTICE`.
+
+## LLM Usage Statement 
+
+We used LLMs to help organize the code and format this README.md. All of the output has been verified by the human authors. 
