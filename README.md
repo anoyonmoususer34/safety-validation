@@ -151,7 +151,6 @@ Assets (not included):
 - policy weights: `bash benchmark/download_weights.sh` (Alpamayo 1.5, SIMFORGE-D1.5)
   and `bash data/download_vavam_assets.sh` (VaVAM).
 
-Fill in your account and partition in `benchmark/*.sbatch`, then, on a login node:
 
 ```bash
 bash benchmark/submit.sh main         # 42 core scenes, 1 rollout: benchmark/runs_core/
